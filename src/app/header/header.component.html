@@ -1,0 +1,22 @@
+<header class="bg-gray-800 p-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex items-center justify-between">
+        <h1 class="text-white text-xl font-bold">Stock Tracker</h1>
+        <div class="flex items-center">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()"
+            placeholder="Search stocks..."
+            class="px-4 py-2 rounded-lg focus:outline-none text-white"
+          />
+          <button
+            (click)="onSearch()"
+            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
