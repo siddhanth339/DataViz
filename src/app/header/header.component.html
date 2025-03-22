@@ -1,22 +1,37 @@
-<header class="bg-gray-800 p-4">
-    <div class="max-w-7xl mx-auto">
-      <div class="flex items-center justify-between">
-        <h1 class="text-white text-xl font-bold">Stock Tracker</h1>
-        <div class="flex items-center">
-          <input
-            type="text"
-            [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()"
-            placeholder="Search stocks..."
-            class="px-4 py-2 rounded-lg focus:outline-none text-white"
-          />
-          <button
-            (click)="onSearch()"
-            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            Search
-          </button>
-        </div>
-      </div>
+<div class="relative">
+    <div class="flex w-full">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="onInputChange()" 
+        (keyup.enter)="onSearch()"
+        placeholder="Search for stocks..."
+        class="w-full px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+      <button 
+        (click)="onSearch()"
+        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r transition duration-150 ease-in-out"
+      >Search</button>
     </div>
-  </header>
+    
+    @if (showDropdown) {
+      <div class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-72 overflow-y-auto">
+        @for (result of searchResults; track $index) {
+          <div 
+            (click)="onSelectResult(result)"
+            class="p-3 cursor-pointer hover:bg-gray-100 border-b border-gray-100"
+          >
+            <div class="flex flex-col">
+              <div><span class="font-semibold">{{ result['1. symbol'] }}</span> - {{ result['2. name'] }}</div>
+              <div class="text-xs text-gray-500">{{ result['3. type'] }}, {{ result['4. region'] }}</div>
+            </div>
+          </div>
+        }
+        @if (searchResults.length === 0) {
+          <div class="p-3 text-gray-500">
+            No results found
+          </div>
+        }
+      </div>
+    }
+  </div>
