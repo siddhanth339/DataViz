@@ -1,7 +1,10 @@
-<div class="container mx-auto p-4">
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <p class="text-gray-500 text-center">
-        <app-stock-overview></app-stock-overview>
-      </p>
-    </div>
+<div class="h-screen w-screen bg-gray-900">
+    <as-split direction="horizontal">
+      <as-split-area [size]="75">
+        <app-main-chart></app-main-chart>
+      </as-split-area>
+      <as-split-area [size]="25">
+            <app-stock-overview></app-stock-overview>
+      </as-split-area>
+    </as-split>
   </div>

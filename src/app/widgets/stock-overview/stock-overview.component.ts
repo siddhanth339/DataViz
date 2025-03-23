@@ -25,7 +25,7 @@ export class StockOverviewComponent implements OnInit {
     });
     
     // Optional: fetch initial data if needed
-    this.fetchData('');
+    this.fetchData('IBM');
   }
 
   fetchData(query: string) {
@@ -50,5 +50,23 @@ export class StockOverviewComponent implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  formatMarketCap(marketCap: string): string {
+    const num = parseFloat(marketCap);
+    if (num >= 1e12) {
+      return (num / 1e12).toFixed(2) + 'T';
+    } else if (num >= 1e9) {
+      return (num / 1e9).toFixed(2) + 'B';
+    } else if (num >= 1e6) {
+      return (num / 1e6).toFixed(2) + 'M';
+    }
+    return marketCap;
+  }
+  
+  formatDate(dateStr: string): string {
+    if (!dateStr) return 'N/A';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString();
   }
 }
