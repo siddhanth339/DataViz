@@ -1,6 +1,6 @@
 @if (data)
 {
-    <div class="h-full w-full bg-gray-800 text-gray-200 p-4 overflow-y-auto">
+    <div class="w-full bg-gray-800 text-gray-200 p-4 overflow-y-auto">
         <!-- Header with company name -->
         <div class="border-b border-gray-700 pb-3 mb-4">
           <h2 class="text-xl font-bold text-white">{{ data.Name }}</h2>
@@ -64,7 +64,10 @@
           </div>
         </div>
       </div>
-}
+      <div class="w-full">
+        <app-income-statement-chart [data]="incomeStatements"></app-income-statement-chart>
+      </div>
+    }
 @else {
     <p>Loading...</p>
 }

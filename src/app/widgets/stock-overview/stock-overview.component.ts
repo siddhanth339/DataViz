@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { StockDataService } from '../../services/stock-data.service';
 import { Subscription } from 'rxjs';
+import { IncomeStatementChartComponent } from "../../income-statement-chart/income-statement-chart.component";
 
 @Component({
   selector: 'app-stock-overview',
-  imports: [],
+  imports: [IncomeStatementChartComponent, IncomeStatementChartComponent],
   templateUrl: './stock-overview.component.html',
   styleUrl: './stock-overview.component.css'
 })
 export class StockOverviewComponent implements OnInit {
   data: any;
+  incomeStatements: any;
   loading = false;
   error: string | null = null;
   private subscription: Subscription | null = null;
@@ -41,6 +43,16 @@ export class StockOverviewComponent implements OnInit {
           this.error = 'Failed to fetch data';
           this.loading = false;
           console.error(err);
+        }
+      });
+
+      this.dataService.getIncomeStatementData(query).subscribe({
+        next: (response) => {
+          this.incomeStatements = response;
+        },
+        error: (err) => {
+          this.error = 'Failed to fetch income statements';
+          console.log(err);
         }
       });
     }
