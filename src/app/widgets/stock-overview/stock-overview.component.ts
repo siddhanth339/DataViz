@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StockDataService } from '../../services/stock-data.service';
 import { Subscription } from 'rxjs';
 import { IncomeStatementChartComponent } from "../../income-statement-chart/income-statement-chart.component";
@@ -9,7 +9,7 @@ import { IncomeStatementChartComponent } from "../../income-statement-chart/inco
   templateUrl: './stock-overview.component.html',
   styleUrl: './stock-overview.component.css'
 })
-export class StockOverviewComponent implements OnInit {
+export class StockOverviewComponent implements OnInit, OnDestroy {
   data: any;
   incomeStatements: any;
   loading = false;
