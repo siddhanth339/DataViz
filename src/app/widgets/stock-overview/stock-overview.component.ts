@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StockDataService } from '../../services/stock-data.service';
 import { Subscription } from 'rxjs';
 import { IncomeStatementChartComponent } from "../../income-statement-chart/income-statement-chart.component";
+import { MainChartComponent } from '../main-chart/main-chart.component';
 
 @Component({
   selector: 'app-stock-overview',
@@ -14,8 +15,9 @@ export class StockOverviewComponent implements OnInit, OnDestroy {
   incomeStatements: any;
   loading = false;
   error: string | null = null;
+  latestPrice: number | null = null;
   private subscription: Subscription | null = null;
-
+  private priceSub: Subscription | null = null;
   constructor(private dataService: StockDataService) { }
 
   ngOnInit() {
@@ -25,7 +27,12 @@ export class StockOverviewComponent implements OnInit, OnDestroy {
         this.fetchData(query);
       }
     });
-    
+
+    this.priceSub = this.dataService.latestPrice$
+    .subscribe(price => {
+      this.latestPrice = price;
+    });
+
     // Optional: fetch initial data if needed
     this.fetchData('IBM');
   }

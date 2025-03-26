@@ -10,8 +10,13 @@ export class StockDataService {
   private searchQuerySubject = new BehaviorSubject<string>('');
   public searchQuery$ = this.searchQuerySubject.asObservable();
 
+  private latestPriceSubject = new BehaviorSubject<number | null>(null);
+  public latestPrice$ = this.latestPriceSubject.asObservable();
+  
   private searchInputSubject = new Subject<string>();
   
+  private priceData: any;
+
   public searchResults$: Observable<any[]> = this.searchInputSubject.pipe(
     debounceTime(300), // Wait for 300ms pause in events
     distinctUntilChanged(), // Only emit if value is different from previous
@@ -2307,9 +2312,10 @@ export class StockDataService {
 
   getStockPrice(symbol: string): Observable<any> {
     const apiKey = environment.apiKey;
-    const url = environment.stockPriceUrl + symbol + '&apikey=' + apiKey;;
+    const url = environment.stockPriceUrl + symbol + '&apikey=' + apiKey;
 
-    return of({
+    //this.priceData = this.http.get(url); // get returns an observable, find how to extract data from this observable to set the value of latestPrice.
+    this.priceData = {
         "Meta Data": {
             "1. Information": "Monthly Prices (open, high, low, close) and Volumes",
             "2. Symbol": "IBM",
@@ -4446,8 +4452,11 @@ export class StockDataService {
                 "5. volume": "158626300"
             }
         }
-    })
+    };
+    const latestDataKey  = Object.keys(this.priceData["Monthly Time Series"])[0];
+    const latestPrice = parseFloat(this.priceData["Monthly Time Series"][latestDataKey]["4. close"]);
+    this.latestPriceSubject.next(latestPrice);
+    return of(this.priceData);
+}
 
-    // return this.http.get(url);
-  }
 }

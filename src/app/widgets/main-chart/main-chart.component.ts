@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StockDataService } from '../../services/stock-data.service';
-import { Subscription } from 'rxjs';
-import { createChart, HistogramSeries } from 'lightweight-charts';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { CandlestickSeries, createChart, HistogramSeries } from 'lightweight-charts';
 
 @Component({
   selector: 'app-main-chart',
@@ -15,6 +15,7 @@ export class MainChartComponent implements OnInit, OnDestroy {
   private chartData: any;
   private chart: any;
   private chartOptions: any;
+
   constructor(private dataService: StockDataService) { }
 
   ngOnInit() {
@@ -54,11 +55,25 @@ export class MainChartComponent implements OnInit, OnDestroy {
     this.chart = createChart('priceChartContainer', this.chartOptions);
 
     const histogramSeries = this.chart.addSeries(HistogramSeries, { color: '#26a69a' });
-    //upColor: '#26a69a', downColor: '#ef5350'
-    this.chartData = []
+    const candlestickSeries = this.chart.addSeries(CandlestickSeries, { upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350' });
+
+    this.chartData = [];
+       for (let key in this.priceData["Monthly Time Series"]) {
+      this.chartData.push({
+        open: parseFloat(this.priceData['Monthly Time Series'][key]["1. open"]),
+        high: parseFloat(this.priceData['Monthly Time Series'][key]["2. high"]),
+        low: parseFloat(this.priceData['Monthly Time Series'][key]["3. low"]),
+        close: parseFloat(this.priceData['Monthly Time Series'][key]["4. close"]),
+        time: key
+      })
+    }
+    this.chartData.reverse(); // to have data sorted from oldest to latest price on the price chart from left to right
+    candlestickSeries.setData(this.chartData);
+
+    this.chartData = [];
     for (let key in this.priceData["Monthly Time Series"]) {
       this.chartData.push({
-        value: parseFloat(this.priceData['Monthly Time Series'][key]['5. volume']),
+        value: parseFloat(this.priceData['Monthly Time Series'][key]['5. volume']) / 1000000000,
         time: key
       })
     }
