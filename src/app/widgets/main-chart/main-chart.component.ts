@@ -12,9 +12,8 @@ import { CandlestickSeries, createChart, HistogramSeries } from 'lightweight-cha
 export class MainChartComponent implements OnInit, OnDestroy {
   priceData: any;
   private subscription: Subscription | null = null;
-  private chartData: any;
-  private chart: any;
-  private chartOptions: any;
+  private priceChart: any;
+  private priceChartOptions: any;
 
   constructor(private dataService: StockDataService) { }
 
@@ -48,18 +47,24 @@ export class MainChartComponent implements OnInit, OnDestroy {
   }
 
   private createPriceChart(): void {
-    this.chartOptions = { 
-      layout: { textColor: 'black', background: { type: 'solid', color: 'white' } }, 
-      autoSize: true,
-      };
-    this.chart = createChart('priceChartContainer', this.chartOptions);
+    this.priceChartOptions = {
+      layout: { textColor: 'black', background: { type: 'solid', color: 'white' } },
+      autoSize: true
+    };
+    this.priceChart = createChart('priceChartContainer', this.priceChartOptions);
 
-    const histogramSeries = this.chart.addSeries(HistogramSeries, { color: '#26a69a' });
-    const candlestickSeries = this.chart.addSeries(CandlestickSeries, { upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350' });
+    // top parameter sets 0.7 or 70% empty space from the top of the chart
+    // bottom sets 0% from the bottom of the chart to make the chart align with the x axis
+    this.priceChart.priceScale('right').applyOptions({
 
-    this.chartData = [];
-       for (let key in this.priceData["Monthly Time Series"]) {
-      this.chartData.push({
+    });
+   const candlestickSeries = this.priceChart.addSeries(CandlestickSeries, { 
+      upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350' });
+
+    let chartData = [];
+
+    for (let key in this.priceData["Monthly Time Series"]) {
+      chartData.push({
         open: parseFloat(this.priceData['Monthly Time Series'][key]["1. open"]),
         high: parseFloat(this.priceData['Monthly Time Series'][key]["2. high"]),
         low: parseFloat(this.priceData['Monthly Time Series'][key]["3. low"]),
@@ -67,21 +72,15 @@ export class MainChartComponent implements OnInit, OnDestroy {
         time: key
       })
     }
-    this.chartData.reverse(); // to have data sorted from oldest to latest price on the price chart from left to right
-    candlestickSeries.setData(this.chartData);
-
-    this.chartData = [];
-    for (let key in this.priceData["Monthly Time Series"]) {
-      this.chartData.push({
-        value: parseFloat(this.priceData['Monthly Time Series'][key]['5. volume']) / 1000000000,
-        time: key
-      })
-    }
-    this.chartData.reverse();
-    histogramSeries.setData(this.chartData);
-
-    this.chart.timeScale().fitContent();
+    chartData.reverse(); // to have data sorted from oldest to latest price on the price chart from left to right
+    candlestickSeries.setData(chartData);
+    //Adjust the chart view to fit content
+    this.priceChart.timeScale().fitContent();
   }
+
+
+
+
 
   ngOnDestroy() {
     if (this.subscription) {
@@ -89,3 +88,6 @@ export class MainChartComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+
+// volumes are generally in hundreds of thousands but price can range from < 100 to a few thousand

@@ -1,12 +1,12 @@
-<div class="relative">
-    <div class="flex w-full">
+<div class="relative m-2">
+    <div class="flex w-full shadow-sm">
       <input 
         type="text" 
         [(ngModel)]="searchQuery" 
         (input)="onInputChange()" 
         (keyup.enter)="onSearch()"
         placeholder="Search for stocks..."
-        class="w-full px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        class="w-full px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
       >
       <button 
         (click)="onSearch()"
@@ -35,3 +35,51 @@
       </div>
     }
   </div>
+
+  <!-- <div class="relative w-full max-w-2xl mx-auto">
+    <div class="flex w-full shadow-sm">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="onInputChange()" 
+        (keyup.enter)="onSearch()" 
+        placeholder="Search for stocks..." 
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+      >
+      <button 
+        (click)="onSearch()" 
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-r-lg font-medium transition-colors duration-200 flex items-center justify-center"
+      >
+        <span>Search</span>
+      </button>
+    </div>
+  
+    @if (showDropdown) {
+      <div class="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto transition-all duration-200 ease-in-out">
+        @for (result of searchResults; track $index) {
+          <div 
+            (click)="onSelectResult(result)"
+            class="p-4 cursor-pointer hover:bg-indigo-50 border-b border-gray-100 transition-colors duration-150"
+          >
+            <div class="flex flex-col">
+              <div class="flex items-center">
+                <span class="font-semibold text-indigo-700">{{ result['1. symbol'] }}</span>
+                <span class="mx-2 text-gray-400">|</span>
+                <span class="text-gray-800">{{ result['2. name'] }}</span>
+              </div>
+              <div class="text-xs text-gray-500 mt-1">
+                <span class="inline-block px-2 py-1 bg-gray-100 rounded-full text-xs mr-2">{{ result['3. type'] }}</span>
+                <span class="inline-block px-2 py-1 bg-gray-100 rounded-full text-xs">{{ result['4. region'] }}</span>
+              </div>
+            </div>
+          </div>
+        }
+        @if (searchResults.length === 0) {
+          <div class="p-6 text-gray-500 text-center">
+            <div class="text-lg font-medium">No results found</div>
+            <p class="text-sm mt-1">Try a different search term</p>
+          </div>
+        }
+      </div>
+    }
+  </div> -->
