@@ -21,11 +21,11 @@ export class HeaderComponent {
   constructor(private stockDataService: StockDataService) {
     // Subscribe to search results
     this.stockDataService.searchResults$.subscribe((results: any) => {
-      console.log("assigning searchResults");
+      //console.log("assigning searchResults");
       if (results && results.bestMatches) {
         this.searchResults = results.bestMatches;
         this.showDropdown = Array.isArray(this.searchResults) && this.searchResults.length > 0;
-        console.log(this.searchResults);
+        //console.log(this.searchResults);
       } else {
         this.searchResults = [];
         this.showDropdown = false;

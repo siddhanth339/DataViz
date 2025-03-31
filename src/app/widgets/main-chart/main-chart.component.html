@@ -1,12 +1,10 @@
 
-  @if (priceData) {
+ 
     <div class="w-full h-full">
-      <div id="priceChartContainer" class="w-full h-full"></div>
+      <div id="priceChartContainer" class="w-full h-full">
+        @if (!priceData) {    <div class="w-full h-fullflex text-white items-center justify-center text-gray-400">
+          Candlestick Chart Loading...
+        </div>}
+      </div>
     </div>
-    
-    }
-    @else {
-    <div class="w-full h-fullflex text-white items-center justify-center text-gray-400">
-      Candlestick Chart Loading...
-    </div>
-    }
+

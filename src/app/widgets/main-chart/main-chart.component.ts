@@ -10,10 +10,14 @@ import { CandlestickSeries, createChart, HistogramSeries } from 'lightweight-cha
   styleUrl: './main-chart.component.css'
 })
 export class MainChartComponent implements OnInit, OnDestroy {
-  priceData: any;
+
   private subscription: Subscription | null = null;
-  private priceChart: any;
+  private priceChart: any = null;
   private priceChartOptions: any;
+  private candlestickSeries: any;
+  private volumeSeries: any;
+  priceData: any;
+  private priceDataSubject = new BehaviorSubject<any>(null);
 
   constructor(private dataService: StockDataService) { }
 
@@ -32,21 +36,34 @@ export class MainChartComponent implements OnInit, OnDestroy {
       this.dataService.getStockPrice(query).subscribe({
         next: (response) => {
           this.priceData = response;
+          //console.log('setting new price data');
+          this.priceDataSubject.next(this.priceData);
         },
         error: (err) => {
           console.error(err);
         }
-      })
+      });
     }
   }
 
   ngAfterViewInit() {
-    if (this.priceData) {
-      this.createPriceChart();
-    }
+    this.priceDataSubject.subscribe((data): void => {
+      //console.log('inside ngafterviewinit > price subject subscribe');
+      //console.log(data);
+      if (data) {
+        if (this.priceChart === null){
+          this.createPriceChart(); // Now the DOM element exists
+        }
+        else {
+          this.updatePriceChart();
+        }
+
+      }
+    });
   }
 
   private createPriceChart(): void {
+    console.log('creating price chart');
     this.priceChartOptions = {
       layout: { textColor: 'black', background: { type: 'solid', color: 'white' }, panes: {
         separatorColor: '#f22c3d',
@@ -59,12 +76,29 @@ export class MainChartComponent implements OnInit, OnDestroy {
     this.priceChart = createChart('priceChartContainer', this.priceChartOptions);
 
     // 0 at the end set's the pane index for charts. Panes are like separations within a chart to display multiple series
-   const candlestickSeries = this.priceChart.addSeries(CandlestickSeries, { 
+   this.candlestickSeries = this.priceChart.addSeries(CandlestickSeries, { 
       upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
       wickUpColor: '#26a69a', wickDownColor: '#ef5350',
       title: 'Price' }, 
       0);
 
+    
+    this.candlestickSeries.setData(this.getCandleSticksChartData());
+    this.volumeSeries = this.priceChart.addSeries(HistogramSeries, { color: '#26a69a', title: 'Volume'}, 1);
+    
+    this.volumeSeries.setData(this.getVolumesChartData());
+
+    //Adjust the chart view to fit content
+    this.priceChart.timeScale().fitContent();
+  }
+
+  private updatePriceChart(): void {
+    console.log('updating price chart');
+    this.candlestickSeries.setData(this.getCandleSticksChartData());
+    this.volumeSeries.setData(this.getVolumesChartData());
+  }
+
+  private getCandleSticksChartData(): any[] {
     let chartData = [];
 
     for (let key in this.priceData["Monthly Time Series"]) {
@@ -77,13 +111,13 @@ export class MainChartComponent implements OnInit, OnDestroy {
       })
     }
     chartData.reverse(); // to have data sorted from oldest to latest price on the price chart from left to right
-    candlestickSeries.setData(chartData);
+    return chartData;
 
-    const volumeSeries = this.priceChart.addSeries(HistogramSeries, { color: '#26a69a', title: 'Volume'}, 1);
-    chartData = [];
-    let prevValue = -1;
-    let currentBarColor = '#26a69a';
+  }
 
+  private getVolumesChartData(): any[] {
+    let chartData = [];
+  
     for (let key in this.priceData["Monthly Time Series"]) {
       const val = parseFloat(this.priceData['Monthly Time Series'][key]['5. volume']) / 1000000000;
       chartData.push({
@@ -91,10 +125,8 @@ export class MainChartComponent implements OnInit, OnDestroy {
         time: key,
         color: ''
       })
-      prevValue = val;
     }
     chartData.reverse();
-
     chartData.map((item, index, array) => {
       if (index > 0) {
         const previousItem = array[index - 1];
@@ -104,13 +136,8 @@ export class MainChartComponent implements OnInit, OnDestroy {
       }
       return item;
     })
-    
-    volumeSeries.setData(chartData);
-
-    //Adjust the chart view to fit content
-    this.priceChart.timeScale().fitContent();
+    return chartData;
   }
-
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
